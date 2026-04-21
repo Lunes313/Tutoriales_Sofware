@@ -1,6 +1,31 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=tienda_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret_password
+
+  web_django:
+    build: .
+    command: sh -c "python manage.py collectstatic --noinput && gunicorn Tienda.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=tienda_db
+      - DB_USER=postgres
+      - DB_PASSWORD=secret_password
+      - DB_HOST=db
+      - DB_PORT=5432
+      - ALLOWED_HOSTS=*
+
   pagos_flask:
     build: ./microservicio_pagos
     ports:
@@ -12,5 +37,11 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/staticfiles
     depends_on:
+      - web_django
       - pagos_flask
+
+volumes:
+  postgres_data:
+  static_volume:
