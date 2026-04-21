@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-import os
 
 app = Flask(__name__)
 
@@ -7,7 +6,6 @@ app = Flask(__name__)
 def realizar_compra():
     data = request.get_json()
 
-    # Simulacion de logica de negocio extraida
     producto_id = data.get('producto_id')
     cantidad = data.get('cantidad', 1)
 
