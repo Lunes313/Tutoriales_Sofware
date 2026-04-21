@@ -32,10 +32,10 @@ services:
   nginx:
     image: nginx:1.25-alpine
     ports:
-      - "80:80"  # Nginx es el único expuesto a internet
+      - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - static_volume:/staticfiles
+      - static_volume:/app/staticfiles
     depends_on:
       - web
 
